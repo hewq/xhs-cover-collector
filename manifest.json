@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "小红书封面灵感夹",
+  "description": "收藏、整理和导出小红书封面与标题灵感。",
+  "version": "0.2.0",
+  "action": {
+    "default_title": "小红书封面灵感夹",
+    "default_popup": "index.html"
+  },
+  "permissions": ["storage", "tabs", "scripting"],
+  "host_permissions": ["https://www.xiaohongshu.com/*"]
+}
