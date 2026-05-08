@@ -39,7 +39,7 @@ type UserPreferences = {
 const STORAGE_KEY = "xhs_cover_inspirations";
 const PREFERENCES_KEY = "xhs_cover_preferences";
 
-const COVER_MAKER_URL = "https://example.com/cover-maker";
+const COVER_MAKER_URL = "https://xhs-cover-maker.vercel.app/";
 
 // const FREE_LIMIT = 50;
 
@@ -825,14 +825,14 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
                   想把灵感变成自己的封面？
                 </h3>
                 <p className="mt-1 text-xs leading-5 text-zinc-600">
-                  后续会接入小红书封面生成器，支持选择模板、输入标题、一键导出封面图。
+                  已支持跳转到小红卡片生成器，把收藏的标题灵感快速变成小红书封面和轮播卡片。
                 </p>
 
                 <button
                   onClick={handleOpenCoverMakerHome}
                   className="mt-3 inline-flex rounded-lg bg-red-500 px-3 py-2 text-xs font-medium text-white hover:bg-red-600"
                 >
-                  了解封面生成器
+                  打开小红卡片
                 </button>
               </div>
             </div>
