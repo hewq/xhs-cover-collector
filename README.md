@@ -1,73 +1,71 @@
-# React + TypeScript + Vite
+# 小红书封面灵感夹
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一个帮助小红书创作者收藏、整理、拆解和导出封面与标题灵感的 Chrome 插件。
 
-Currently, two official plugins are available:
+## 功能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 读取当前页面标题和链接
+- 尝试自动提取小红书页面标题、作者和封面图
+- 支持手动编辑标题、作者和封面图链接
+- 支持分类和标题类型
+- 支持搜索和分类筛选
+- 支持收藏备注
+- 支持一键复制小红书灵感拆解模板
+- 支持根据标题类型生成改写标题候选
+- 支持导出 CSV
+- 支持导出 Markdown
+- 支持保存默认领域、分类和标题类型偏好
 
-## React Compiler
+## 适合谁使用？
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 小红书博主
+- 内容运营
+- 知识付费博主
+- 咨询师
+- 设计师
+- 自媒体创作者
 
-## Expanding the ESLint configuration
+## 本地开发
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+安装依赖：
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+启动开发：
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+构建插件：
+
+```bash
+npm run build
+```
+
+## 本地加载插件
+
+1. 打开 Chrome
+2. 访问 `chrome://extensions/`
+3. 打开右上角「开发者模式」
+4. 点击「加载已解压的扩展程序」
+5. 选择项目里的 `dist` 文件夹
+
+## 权限说明
+
+插件使用以下权限：
+
+- `storage`：用于在本地保存灵感库和用户偏好
+- `tabs`：用于读取当前标签页标题和链接
+- `scripting`：用于在小红书页面尝试提取标题、作者和封面图
+- `https://www.xiaohongshu.com/*`：仅用于在小红书网页中提取页面信息
+
+## 数据说明
+
+插件数据默认保存在浏览器本地，不上传到服务器。
+
+## 版本
+
+v1.0.0

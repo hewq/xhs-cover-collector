@@ -4,6 +4,8 @@ import {
   Download,
   ExternalLink,
   FileText,
+  ImagePlus,
+  Lightbulb,
   Plus,
   Search,
   Sparkles,
@@ -28,7 +30,18 @@ type XhsPageInfo = {
   coverUrl?: string;
 };
 
+type UserPreferences = {
+  category: string;
+  titleType: string;
+  myField: string;
+};
+
 const STORAGE_KEY = "xhs_cover_inspirations";
+const PREFERENCES_KEY = "xhs_cover_preferences";
+
+const COVER_MAKER_URL = "https://example.com/cover-maker";
+
+// const FREE_LIMIT = 50;
 
 const defaultCategories = [
   "封面参考",
@@ -59,15 +72,28 @@ function App() {
   const [category, setCategory] = useState(defaultCategories[0]);
   const [titleType, setTitleType] = useState(titleTypes[0]);
   const [selectedCategory, setSelectedCategory] = useState("全部");
+  const [myField, setMyField] = useState("前端副业");
   const [note, setNote] = useState("");
   const [items, setItems] = useState<InspirationItem[]>([]);
   const [keyword, setKeyword] = useState("");
   const [isExtracting, setIsExtracting] = useState(false);
+  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
 
   useEffect(() => {
     loadCurrentTab();
     loadItems();
+    loadPreferences();
   }, []);
+
+  useEffect(() => {
+    if (!preferencesLoaded) return;
+
+    savePreferences({
+      category,
+      titleType,
+      myField,
+    });
+  }, [category, titleType, myField, preferencesLoaded]);
 
   const filteredItems = useMemo(() => {
     const q = keyword.trim().toLowerCase();
@@ -211,6 +237,33 @@ function App() {
     setItems(normalized);
   }
 
+  async function loadPreferences() {
+    const result = await chrome.storage.local.get(PREFERENCES_KEY);
+    const preferences = result[PREFERENCES_KEY] as UserPreferences | undefined;
+
+    if (preferences) {
+      if (preferences.category) {
+        setCategory(preferences.category);
+      }
+
+      if (preferences.titleType) {
+        setTitleType(preferences.titleType);
+      }
+
+      if (preferences.myField) {
+        setMyField(preferences.myField);
+      }
+    }
+
+    setPreferencesLoaded(true);
+  }
+
+  async function savePreferences(nextPreferences: UserPreferences) {
+    await chrome.storage.local.set({
+      [PREFERENCES_KEY]: nextPreferences,
+    });
+  }
+
   async function saveItems(nextItems: InspirationItem[]) {
     setItems(nextItems);
     await chrome.storage.local.set({
@@ -220,6 +273,13 @@ function App() {
 
   async function handleSave() {
     if (!currentUrl) return;
+
+    // if (items.length >= FREE_LIMIT) {
+    //   window.alert(
+    //     "免费版最多保存 50 条灵感。你可以先导出 Markdown 备份，后续 Pro 版会支持无限收藏。",
+    //   );
+    //   return;
+    // }
 
     const existed = items.some((item) => item.url === currentUrl);
 
@@ -397,10 +457,133 @@ ${item.note || "这条内容的标题、封面或选题值得参考。"}
 3.
 
 适合我的账号方向：
-- `;
+- ${myField.trim() || ""}`;
 
     await navigator.clipboard.writeText(text);
     window.alert("已复制小红书灵感拆解模板");
+  }
+
+  function generateRewriteTitles(item: InspirationItem) {
+    const type = item.titleType || "未分类";
+
+    const commonTitles = [
+      "新手做【你的领域】，先别急着开始，建议先看完这篇",
+      "普通人想做好【你的领域】，真正重要的是这 3 件事",
+      "做【你的领域】之前，我希望有人早点告诉我这些",
+      "为什么你做【你的领域】一直没结果？可能是方向错了",
+      "适合普通人的【你的领域】入门路线，建议收藏",
+    ];
+
+    const titleMap: Record<string, string[]> = {
+      干货清单: [
+        "做【你的领域】必备的 7 个方法，新手建议收藏",
+        "我整理了【你的领域】最实用的 10 个技巧",
+        "想做好【你的领域】，这 5 个工具 / 方法一定要知道",
+        "一篇讲清楚【你的领域】从 0 到 1 怎么做",
+        "新手入门【你的领域】，照着这份清单做就够了",
+      ],
+      避坑指南: [
+        "新手做【你的领域】，千万别一开始就踩这 5 个坑",
+        "做【你的领域】之前，这几个错误一定要避开",
+        "我做【你的领域】踩过的坑，建议你提前知道",
+        "别再盲目做【你的领域】了，先避开这些误区",
+        "普通人做【你的领域】，最容易忽略的 3 个问题",
+      ],
+      教程步骤: [
+        "手把手教你做【你的领域】，新手也能跟着做",
+        "从 0 开始做【你的领域】，完整流程来了",
+        "新手做【你的领域】的 5 个步骤，照着做就行",
+        "第一次做【你的领域】，建议按这个顺序来",
+        "一篇讲清楚【你的领域】的完整操作流程",
+      ],
+      对比测评: [
+        "做【你的领域】，A 和 B 到底怎么选？",
+        "我对比了 3 种【你的领域】方法，结果很意外",
+        "新手做【你的领域】，别再选错工具了",
+        "【你的领域】常见方案对比，看完就知道怎么选",
+        "普通人做【你的领域】，更推荐这一个方案",
+      ],
+      经验复盘: [
+        "做【你的领域】这段时间，我总结了 5 个经验",
+        "从不会到上手【你的领域】，我踩过这些坑",
+        "做【你的领域】一个月后，我最大的感受是",
+        "我为什么建议新手这样做【你的领域】",
+        "普通人做【你的领域】，这是我目前最真实的复盘",
+      ],
+      情绪共鸣: [
+        "做【你的领域】真的很难，但这几点让我坚持下来",
+        "如果你也在做【你的领域】，这篇写给你",
+        "普通人做【你的领域】，最难的不是开始",
+        "别焦虑，做【你的领域】可以慢慢来",
+        "做【你的领域】没人告诉你的真实感受",
+      ],
+      好物推荐: [
+        "做【你的领域】后，我最常用的 5 个工具",
+        "这些【你的领域】好物 / 工具，真的提高效率",
+        "新手做【你的领域】，我推荐先准备这些",
+        "提升【你的领域】效率的工具清单，建议收藏",
+        "我愿意反复推荐的【你的领域】工具",
+      ],
+      课程推广: [
+        "想系统学习【你的领域】，这套方法适合你",
+        "如果你正在卡在【你的领域】，可以看看这个方案",
+        "我把【你的领域】入门路径整理成了一套课程",
+        "适合新手的【你的领域】学习路线来了",
+        "想少走弯路做【你的领域】，可以从这里开始",
+      ],
+    };
+
+    const field = myField.trim() || "你的领域";
+    const templates = titleMap[type] || commonTitles;
+
+    return templates.map((title) => title.replaceAll("【你的领域】", field));
+  }
+
+  async function handleCopyRewriteTitles(item: InspirationItem) {
+    const titles = generateRewriteTitles(item);
+
+    const text = `【小红书标题改写候选】
+
+原始标题：
+${item.title}
+
+标题类型：
+${item.titleType || "未分类"}
+
+当前领域：
+${myField.trim() || "未填写"}
+
+可改写方向：
+${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
+
+使用说明：
+你可以继续把标题里的领域、人群、结果承诺改得更具体，例如把“前端副业”改成“前端工程师下班副业”。`;
+
+    await navigator.clipboard.writeText(text);
+    window.alert("已复制标题改写候选");
+  }
+
+  function handleOpenCoverMaker(item: InspirationItem) {
+    const params = new URLSearchParams({
+      title: item.title,
+      author: item.author || "",
+      category: item.category,
+      titleType: item.titleType || "",
+      field: myField.trim() || "",
+      sourceUrl: item.url,
+    });
+
+    const targetUrl = `${COVER_MAKER_URL}?${params.toString()}`;
+
+    chrome.tabs.create({
+      url: targetUrl,
+    });
+  }
+
+  function handleOpenCoverMakerHome() {
+    chrome.tabs.create({
+      url: COVER_MAKER_URL,
+    });
   }
 
   const isXhsPage = currentUrl.includes("xiaohongshu.com");
@@ -529,6 +712,48 @@ ${item.note || "这条内容的标题、封面或选题值得参考。"}
 
           <div className="mt-3">
             <label className="mb-1 block text-xs font-medium text-zinc-600">
+              我的领域
+            </label>
+            <input
+              value={myField}
+              onChange={(event) => setMyField(event.target.value)}
+              placeholder="例如：前端副业、小红书运营、AI 工具、职场成长"
+              className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-red-400"
+            />
+            <p className="mt-1 text-[11px] leading-4 text-zinc-400">
+              生成改写标题时会使用这个领域，插件会自动记住你的选择。
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {["小红书运营", "前端副业", "AI 工具", "职场成长"].map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setMyField(item)}
+                  className={`rounded-full px-2 py-1 text-[11px] transition ${
+                    myField === item
+                      ? "bg-red-500 text-white"
+                      : "bg-red-50 text-red-500 hover:bg-red-100"
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setCategory(defaultCategories[0]);
+                setTitleType(titleTypes[0]);
+                setMyField("前端副业");
+              }}
+              className="mt-2 text-[11px] text-zinc-400 hover:text-red-500"
+            >
+              重置默认偏好
+            </button>
+          </div>
+
+          <div className="mt-3">
+            <label className="mb-1 block text-xs font-medium text-zinc-600">
               备注
             </label>
             <textarea
@@ -551,7 +776,12 @@ ${item.note || "这条内容的标题、封面或选题值得参考。"}
 
         <div className="rounded-2xl border border-red-100 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold">我的灵感库</h2>
+            <div>
+              <h2 className="text-sm font-semibold">我的灵感库</h2>
+              {/* <p className="mt-0.5 text-xs text-zinc-400">
+                已收藏 {items.length} 条，免费版建议上限 {FREE_LIMIT} 条
+              </p> */}
+            </div>
 
             <div className="flex items-center gap-2">
               <button
@@ -584,7 +814,31 @@ ${item.note || "这条内容的标题、封面或选题值得参考。"}
             />
           </div>
 
-          <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
+          <div className="rounded-2xl border border-red-100 bg-gradient-to-br from-red-50 to-orange-50 p-4 shadow-sm">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-500 text-white">
+                <Sparkles className="h-5 w-5" />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold text-zinc-900">
+                  想把灵感变成自己的封面？
+                </h3>
+                <p className="mt-1 text-xs leading-5 text-zinc-600">
+                  后续会接入小红书封面生成器，支持选择模板、输入标题、一键导出封面图。
+                </p>
+
+                <button
+                  onClick={handleOpenCoverMakerHome}
+                  className="mt-3 inline-flex rounded-lg bg-red-500 px-3 py-2 text-xs font-medium text-white hover:bg-red-600"
+                >
+                  了解封面生成器
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-3 mt-3 flex gap-2 overflow-x-auto pb-1">
             {["全部", ...defaultCategories].map((item) => (
               <button
                 key={item}
@@ -663,28 +917,44 @@ ${item.note || "这条内容的标题、封面或选题值得参考。"}
                     </p>
                   )}
 
-                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
+                  <div className="flex items-center justify-between">
                     <span>{new Date(item.createdAt).toLocaleDateString()}</span>
 
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => handleCopyAnalysis(item)}
-                        className="inline-flex items-center gap-1 text-zinc-500 hover:text-red-500"
-                      >
-                        复制拆解
-                        <Copy className="h-3.5 w-3.5" />
-                      </button>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-red-500"
+                    >
+                      打开
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  </div>
 
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-red-500"
-                      >
-                        打开
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </a>
-                    </div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <button
+                      onClick={() => handleCopyAnalysis(item)}
+                      className="inline-flex items-center gap-1 text-zinc-500 hover:text-red-500"
+                    >
+                      复制拆解
+                      <Copy className="h-3.5 w-3.5" />
+                    </button>
+
+                    <button
+                      onClick={() => handleCopyRewriteTitles(item)}
+                      className="inline-flex items-center gap-1 text-zinc-500 hover:text-red-500"
+                    >
+                      生成改写
+                      <Lightbulb className="h-3.5 w-3.5" />
+                    </button>
+
+                    <button
+                      onClick={() => handleOpenCoverMaker(item)}
+                      className="inline-flex items-center gap-1 text-red-500 hover:text-red-600"
+                    >
+                      生成封面
+                      <ImagePlus className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 </div>
               ))}
