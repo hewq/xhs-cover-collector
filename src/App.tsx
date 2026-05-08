@@ -729,7 +729,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
                   key={item}
                   type="button"
                   onClick={() => setMyField(item)}
-                  className={`rounded-full px-2 py-1 text-[11px] transition ${
+                  className={`cursor-pointer rounded-full px-2 py-1 text-[11px] transition ${
                     myField === item
                       ? "bg-red-500 text-white"
                       : "bg-red-50 text-red-500 hover:bg-red-100"
@@ -746,7 +746,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
                 setTitleType(titleTypes[0]);
                 setMyField("前端副业");
               }}
-              className="mt-2 text-[11px] text-zinc-400 hover:text-red-500"
+              className="cursor-pointer mt-2 text-[11px] text-zinc-400 hover:text-red-500"
             >
               重置默认偏好
             </button>
@@ -767,7 +767,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
           <button
             onClick={handleSave}
             disabled={!currentUrl}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-zinc-300"
+            className="cursor-pointer mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-zinc-300"
           >
             <Plus className="h-4 w-4" />
             保存到灵感库
@@ -787,7 +787,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
               <button
                 onClick={handleExportCsv}
                 disabled={items.length === 0}
-                className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer inline-flex items-center gap-1 rounded-lg border border-zinc-200 px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Download className="h-3.5 w-3.5" />
                 CSV
@@ -796,7 +796,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
               <button
                 onClick={handleExportMarkdown}
                 disabled={items.length === 0}
-                className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer inline-flex items-center gap-1 rounded-lg border border-zinc-200 px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <FileText className="h-3.5 w-3.5" />
                 MD
@@ -830,7 +830,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
 
                 <button
                   onClick={handleOpenCoverMakerHome}
-                  className="mt-3 inline-flex rounded-lg bg-red-500 px-3 py-2 text-xs font-medium text-white hover:bg-red-600"
+                  className="cursor-pointer mt-3 inline-flex rounded-lg bg-red-500 px-3 py-2 text-xs font-medium text-white hover:bg-red-600"
                 >
                   打开小红卡片
                 </button>
@@ -843,7 +843,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
               <button
                 key={item}
                 onClick={() => setSelectedCategory(item)}
-                className={`shrink-0 rounded-full px-3 py-1 text-xs transition ${
+                className={`cursor-pointer shrink-0 rounded-full px-3 py-1 text-xs transition ${
                   selectedCategory === item
                     ? "bg-red-500 text-white"
                     : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
@@ -905,7 +905,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
 
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="rounded-lg p-1 text-zinc-400 hover:bg-white hover:text-red-500"
+                      className="cursor-pointer rounded-lg p-1 text-zinc-400 hover:bg-white hover:text-red-500"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -924,7 +924,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
                       href={item.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-red-500"
+                      className="cursor-pointer inline-flex items-center gap-1 text-red-500"
                     >
                       打开
                       <ExternalLink className="h-3.5 w-3.5" />
@@ -934,7 +934,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
                   <div className="flex flex-wrap items-center gap-3">
                     <button
                       onClick={() => handleCopyAnalysis(item)}
-                      className="inline-flex items-center gap-1 text-zinc-500 hover:text-red-500"
+                      className="cursor-pointer inline-flex items-center gap-1 text-zinc-500 hover:text-red-500"
                     >
                       复制拆解
                       <Copy className="h-3.5 w-3.5" />
@@ -942,7 +942,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
 
                     <button
                       onClick={() => handleCopyRewriteTitles(item)}
-                      className="inline-flex items-center gap-1 text-zinc-500 hover:text-red-500"
+                      className="cursor-pointer inline-flex items-center gap-1 text-zinc-500 hover:text-red-500"
                     >
                       生成改写
                       <Lightbulb className="h-3.5 w-3.5" />
@@ -950,7 +950,7 @@ ${titles.map((title, index) => `${index + 1}. ${title}`).join("\n")}
 
                     <button
                       onClick={() => handleOpenCoverMaker(item)}
-                      className="inline-flex items-center gap-1 text-red-500 hover:text-red-600"
+                      className="cursor-pointer inline-flex items-center gap-1 text-red-500 hover:text-red-600"
                     >
                       生成封面
                       <ImagePlus className="h-3.5 w-3.5" />
